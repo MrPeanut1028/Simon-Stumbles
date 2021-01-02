@@ -14,7 +14,8 @@ MonoBehaviour:
   id: simonStumbles
   title: Simon Stumbles
   author: MrPeanut1028
-  description: 
+  description: "With all the talking he does, this was bound to happen. \n\nBy MrPeanut1028.\n\nTP
+    Supported. \n\nModule ID: simonStumbles\nManual Link: https://ktane.timwi.de/HTML/Simon%20Stumbles.html"
   version: 0.1
   outputFolder: build
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: 971ae54de6e12a24493b45544e26677a, type: 3}

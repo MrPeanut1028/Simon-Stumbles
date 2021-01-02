@@ -58,6 +58,7 @@ public class simonStumblesScript : MonoBehaviour {
 	private ColorType[] previousColors = new ColorType[4] { ColorType.Red, ColorType.Yellow, ColorType.Green, ColorType.Blue };
 	private ColorType[] startColors = new ColorType[4] { ColorType.Red, ColorType.Yellow, ColorType.Green, ColorType.Blue };
 	private bool animating = true;
+	private bool moduleSolved = false;
 	private Coroutine[] FlashWaitRoutines = new Coroutine[2];
 	private int stage = 1;
 	private int pressProgress = 0;
@@ -66,6 +67,7 @@ public class simonStumblesScript : MonoBehaviour {
 	private Direction[] Sounds = new Direction[5];
 	private ColorType[] ColorPresses = new ColorType[5] { ColorType.White, ColorType.White, ColorType.White, ColorType.White, ColorType.White };
 	private bool stumbleReqd = false;
+	private string[] numberWords = new string[5] { "first", "second", "third", "fourth", "fifth" };
 
 	private static int moduleIdCounter = 1;
 	private int moduleID;
@@ -94,9 +96,10 @@ public class simonStumblesScript : MonoBehaviour {
 			Flashing[i] = baseColors[Rnd.Range(0, 4)];
 			Sounds[i] = baseDirections[Rnd.Range(0, 4)];
 		}
-		Log("The order of flashing colors is " + Flashing[0].ToString() + ", " + Flashing[1].ToString() + ", " + Flashing[2].ToString() + ", " + Flashing[3].ToString() + ", and" + Flashing[4].ToString() + ".");
-
-
+		Log("The initial colors are " + startColors[0].ToString() + ", " + startColors[1].ToString() + ", " + startColors[2].ToString() + ", and " + startColors[3].ToString() + ".");
+		Log("The order of flashing colors is " + Flashing[0].ToString() + ", " + Flashing[1].ToString() + ", " + Flashing[2].ToString() + ", " + Flashing[3].ToString() + ", and " + Flashing[4].ToString() + ".");
+		Log("The directions stated are " + Sounds[0].ToString() + ", " + Sounds[1].ToString() + ", " + Sounds[2].ToString() + ", " + Sounds[3].ToString() + ", and " + Sounds[4].ToString() + ".");
+		Log("For more specific information, please see the Filtered Log. Search for <Simon Stumbles #" + moduleID + ">.");
 	}
 	
 	// Update is called once per frame
@@ -116,8 +119,9 @@ public class simonStumblesScript : MonoBehaviour {
 
 	public void ButtonPress(KMSelectable Button)
     {
+		bool toStumble = false;
 		bool unicorn = false;
-		if (animating)
+		if (animating || moduleSolved)
 			return;
 		if (FlashWaitRoutines[0] != null)
         {
@@ -148,7 +152,7 @@ public class simonStumblesScript : MonoBehaviour {
 			else if (stumbleReqd)
 			{
 				DebugLog("Stumble pressed, and you needed to. Nice!");
-				StartCoroutine(Stumble(null));
+				toStumble = true;
 				stumbleReqd = false;
 			}
 			else
@@ -173,32 +177,40 @@ public class simonStumblesScript : MonoBehaviour {
 				Strike();
 				return;
             }
-			Log("You pressed the " + baseDirections[index].ToString() + " button, which was colored " + previousColors[index].ToString() + ".");
-			DebugLog("Direction Pressed: " + baseDirections[index].ToString() + " | Table Lookup: " + table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])].ToString() + " | ");
-			DebugLog("Row Lookup: " + Array.IndexOf(baseColors, Flashing[pressProgress]).ToString() + " | Column Lookup: " + Array.IndexOf(previousColors, Flashing[pressProgress]).ToString());
+			DebugLog("You pressed the " + baseDirections[index].ToString() + " button, which was colored " + previousColors[index].ToString() + ".");
+			DebugLog("Direction Pressed: " + baseDirections[index].ToString() + " | Table Lookup: " + table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])].ToString() + " | Assoc. Press Class: " + ColorPresses[pressProgress] + ".");
 			if (previousColors == startColors)
-            {
-				Log("Currently displayed colors are what was initially shown, using the 'However' condition.");
+			{
+				DebugLog("Currently displayed colors are what was initially shown, using the 'However' condition.");
 				unicorn = true;
 				if (Flashing[pressProgress] == previousColors[index])
-					Log("You pressed the flashing color, correct!");
+					DebugLog("You pressed the flashing color (" + Flashing[pressProgress].ToString() + "), correct!");
 				else
-                {
+				{
 					Log("You did not press the flashing color, Strike!");
 					Strike();
 					return;
-                }
-            }
-			else if ((baseDirections[index] == table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])] && ColorPresses[pressProgress] == ColorType.White) || ColorPresses[pressProgress] == previousColors[index])
-				Log("Correct, probably");
+				}
+			}
+			else if (baseDirections[index] == table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])] && ColorPresses[pressProgress] == ColorType.White)
+				DebugLog("The previous stage's " + numberWords[pressProgress] + " press required a stumble or did not exist, table used correctly.");
+			else if (ColorPresses[pressProgress] == previousColors[index])
+				DebugLog("The previous stage's " + numberWords[pressProgress] + " press did not require a stumble, so you pressed the same color as was last pressed, corect.");
 			else
 			{
-				Log("Not correct, probably. Strike!");
+				if (ColorPresses[pressProgress] == ColorType.White)
+					Log("With the last press irrevelant, you needed to press " + table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])].ToString() + " according to the table, but you pressed " + baseDirections[index].ToString() + ". Strike!");
+				else
+					Log("The press for this step was " + ColorPresses[pressProgress].ToString() + " due to the same color in a previous stage, but you pressed " + previousColors[index] + ". Strike!");
 				Strike();
 				return;
 			}
 			if ((previousColors[index] == Flashing[pressProgress] || Array.IndexOf(baseDirections, Sounds[pressProgress]) == index) && !unicorn)
 			{
+				if (previousColors[index] == Flashing[pressProgress])
+					Log("The flashing color is the same as the color you pressed, so you'll need to stumble.");
+				if (Array.IndexOf(baseDirections, Sounds[pressProgress]) == index)
+					Log("The stated direction is the same as the direction you pressed, so you'll need to stumble.");
 				stumbleReqd = true;
 				ColorPresses[pressProgress] = ColorType.White;
 			}
@@ -206,7 +218,10 @@ public class simonStumblesScript : MonoBehaviour {
 				ColorPresses[pressProgress] = previousColors[index];
 			pressProgress++;
 			if (unicorn && pressProgress == stage)
+            {
+				Log("All colors pressed for 'However' condition, so you'll need to stumble.");
 				stumbleReqd = true;
+			}
 			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
 			Button.AddInteractionPunch();
 			FlashWaitRoutines[1] = StartCoroutine(FlashButton(index));
@@ -220,11 +235,15 @@ public class simonStumblesScript : MonoBehaviour {
             {
 				Log("All inputs entered, module solved.");
 				Module.HandlePass();
+				moduleSolved = true;
+				StartCoroutine(Stumble(new ColorType[4] { ColorType.White, ColorType.White, ColorType.White, ColorType.White }));
 				return;
             }
 			else
 				FlashWaitRoutines[0] = StartCoroutine(FlashColors());
 		}
+		if (toStumble)
+			StartCoroutine(Stumble(null));
     }
 	void Strike()
     {
@@ -258,7 +277,7 @@ public class simonStumblesScript : MonoBehaviour {
 		for (int i = 0; i < 4; i++)
         {
 			previousColors[i] = toSet[i];
-			if (Blind.ColorblindModeActive)
+			if (Blind.ColorblindModeActive && previousColors[i] != ColorType.White)
 				CBTexts[i].text = toSet[i].ToString();
         }
 		animating = false;
@@ -267,6 +286,7 @@ public class simonStumblesScript : MonoBehaviour {
 
 	IEnumerator FlashColors()
     {
+		yield return new WaitForSeconds(3.0f);
 		while (true)
         {
 			while (animating)
@@ -287,6 +307,7 @@ public class simonStumblesScript : MonoBehaviour {
 	IEnumerator FlashButton(int index)
     {
 		ButtonLights[index].enabled = true;
+		Audio.PlaySoundAtTransform(SoundEffects[index].name, transform);
 		yield return new WaitForSeconds(0.5f);
 		ButtonLights[index].enabled = false;
 		yield break;
@@ -330,5 +351,23 @@ public class simonStumblesScript : MonoBehaviour {
 				yield return new WaitForSeconds(0.25f);
 		}
 		yield break;
+    }
+
+	IEnumerator TwitchHandleForcedSolve()
+    {
+		while (!moduleSolved)
+        {
+			while (animating) 
+				yield return true;
+			if (stumbleReqd || preStage)
+				KeypadButtons[4].OnInteract();
+			else if (startColors == previousColors)
+				KeypadButtons[Array.IndexOf(previousColors, Flashing[pressProgress])].OnInteract();
+			else if (ColorPresses[pressProgress] != ColorType.White)
+				KeypadButtons[Array.IndexOf(previousColors, ColorPresses[pressProgress])].OnInteract();
+			else
+				KeypadButtons[Array.IndexOf(baseDirections, table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])])].OnInteract();
+			yield return new WaitForSeconds(0.25f);
+		}
     }
 }
