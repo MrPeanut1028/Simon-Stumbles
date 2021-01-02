@@ -68,6 +68,7 @@ public class simonStumblesScript : MonoBehaviour {
 	private ColorType[] ColorPresses = new ColorType[5] { ColorType.White, ColorType.White, ColorType.White, ColorType.White, ColorType.White };
 	private bool stumbleReqd = false;
 	private string[] numberWords = new string[5] { "first", "second", "third", "fourth", "fifth" };
+	private bool tpCB = false;
 
 	private static int moduleIdCounter = 1;
 	private int moduleID;
@@ -86,7 +87,7 @@ public class simonStumblesScript : MonoBehaviour {
 			startColors[i] = previousColors[i];
 			ButtonLights[i].enabled = false;
 			ButtonLights[i].range = transform.lossyScale.x;
-			if (Blind.ColorblindModeActive)
+			if (Blind.ColorblindModeActive || tpCB)
 				CBTexts[i].text = previousColors[i].ToString();
 		}
 		animating = false;
@@ -118,19 +119,19 @@ public class simonStumblesScript : MonoBehaviour {
 	}
 
 	public void ButtonPress(KMSelectable Button)
-    {
+	{
 		bool toStumble = false;
 		bool unicorn = false;
 		if (animating || moduleSolved)
 			return;
 		if (FlashWaitRoutines[0] != null)
-        {
+		{
 			StopCoroutine(FlashWaitRoutines[0]);
 			for (int i = 0; i < 4; i++)
 				ButtonLights[i].enabled = false;
 		}
 		if (FlashWaitRoutines[1] != null)
-        {
+		{
 			StopCoroutine(FlashWaitRoutines[1]);
 			for (int i = 0; i < 4; i++)
 				ButtonLights[i].enabled = false;
@@ -164,7 +165,6 @@ public class simonStumblesScript : MonoBehaviour {
 			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
 			Button.AddInteractionPunch();
 			Audio.PlaySoundAtTransform(SoundEffects[4].name, transform);
-			stumbleReqd = false;
 		}
 		else
 		{
@@ -172,13 +172,12 @@ public class simonStumblesScript : MonoBehaviour {
 				return;
 			//it's a button, so we need to check the press. 
 			if (stumbleReqd)
-            {
+			{
 				Log("You needed to press stumble, but you didn't. Strike!");
 				Strike();
 				return;
-            }
-			DebugLog("You pressed the " + baseDirections[index].ToString() + " button, which was colored " + previousColors[index].ToString() + ".");
-			DebugLog("Direction Pressed: " + baseDirections[index].ToString() + " | Table Lookup: " + table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])].ToString() + " | Assoc. Press Class: " + ColorPresses[pressProgress] + ".");
+			}
+			DebugLog("Stage: " + stage.ToString() + " | pressProgress (0 index): " + pressProgress.ToString() +  " | Direction Pressed: " + baseDirections[index].ToString() + " | Color Pressed: " + previousColors[index].ToString() + " | Table Lookup: " + table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])].ToString() + " | Assoc. Press Class: " + ColorPresses[pressProgress] + "."); ;
 			if (previousColors == startColors)
 			{
 				DebugLog("Currently displayed colors are what was initially shown, using the 'However' condition.");
@@ -208,9 +207,9 @@ public class simonStumblesScript : MonoBehaviour {
 			if ((previousColors[index] == Flashing[pressProgress] || Array.IndexOf(baseDirections, Sounds[pressProgress]) == index) && !unicorn)
 			{
 				if (previousColors[index] == Flashing[pressProgress])
-					Log("The flashing color is the same as the color you pressed, so you'll need to stumble.");
+					DebugLog("The flashing color is the same as the color you pressed, so you'll need to stumble.");
 				if (Array.IndexOf(baseDirections, Sounds[pressProgress]) == index)
-					Log("The stated direction is the same as the direction you pressed, so you'll need to stumble.");
+					DebugLog("The stated direction is the same as the direction you pressed, so you'll need to stumble.");
 				stumbleReqd = true;
 				ColorPresses[pressProgress] = ColorType.White;
 			}
@@ -219,7 +218,7 @@ public class simonStumblesScript : MonoBehaviour {
 			pressProgress++;
 			if (unicorn && pressProgress == stage)
             {
-				Log("All colors pressed for 'However' condition, so you'll need to stumble.");
+				DebugLog("All colors pressed for 'However' condition, so you'll need to stumble.");
 				stumbleReqd = true;
 			}
 			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
@@ -252,7 +251,6 @@ public class simonStumblesScript : MonoBehaviour {
 		StartCoroutine(Stumble(startColors));
 		for (int i = 0; i < 5; i++)
 			ColorPresses[i] = ColorType.White;
-		DebugLog("Strike detected, outputting pressProgress: " + pressProgress.ToString() + " (default 0).");
 		preStage = true;
 		stumbleReqd = false;
 		pressProgress = 0;
@@ -277,7 +275,7 @@ public class simonStumblesScript : MonoBehaviour {
 		for (int i = 0; i < 4; i++)
         {
 			previousColors[i] = toSet[i];
-			if (Blind.ColorblindModeActive && previousColors[i] != ColorType.White)
+			if ((Blind.ColorblindModeActive || tpCB) && previousColors[i] != ColorType.White)
 				CBTexts[i].text = toSet[i].ToString();
         }
 		animating = false;
@@ -313,18 +311,33 @@ public class simonStumblesScript : MonoBehaviour {
 		yield break;
     }
 
-	public readonly string TwitchHelpMessage = "Press the buttons using !{0} <button>. Valid buttons are Red, Yellow, Green, Blue, and Stumble. Buttons are chainable with spaces.";
+	public readonly string TwitchHelpMessage = "Press the buttons using !{0} <button>. Valid buttons are (R)ed, (Y)ellow, (G)reen, (B)lue, and (S)tumble. Toggle colorblind mode with !{0} (c)olorblind. Buttons are chainable with spaces.";
 	IEnumerator ProcessTwitchCommand(string command)
-    {
+	{
 		while (animating) yield return new WaitForSeconds(0.01f);
 		string[] parameters = command.ToUpperInvariant().Trim().Split(' ').ToArray();
 		if (parameters.Count() < 1 || parameters.Count() > 6)
 			yield break;
+		if (parameters.Count() == 1 && (parameters[0] == "COLORBLIND" || parameters[0] == "C"))
+        {
+			if (tpCB)
+            {
+				tpCB = false;
+				for (int i = 0; i < 4; i++)
+					CBTexts[i].text = "";
+			}
+			else
+            {
+				tpCB = true;
+				for (int i = 0; i < 4; i++)
+					CBTexts[i].text = previousColors[i].ToString();
+			}
+        }
 		bool[] valid = new bool[parameters.Count()];
 		for (int i = 0; i < parameters.Count(); i++)
-        {
-			valid[i] = (parameters[i] == "STUMBLE" || parameters[i] == "RED" || parameters[i] == "YELLOW" || parameters[i] == "GREEN" || parameters[i] == "BLUE");
-			if (parameters[i] == "STUMBLE" && parameters.Count() - i > 1)
+		{
+			valid[i] = (parameters[i] == "STUMBLE" || parameters[i] == "RED" || parameters[i] == "YELLOW" || parameters[i] == "GREEN" || parameters[i] == "BLUE" || parameters[i] == "S" || parameters[i] == "R" || parameters[i] == "Y" || parameters[i] == "G" || parameters[i] == "B");
+			if ((parameters[i] == "STUMBLE" || parameters[i] == "S") && parameters.Count() - i > 1)
             {
 				yield return "sendtochaterror You cannot press another button after you stumble!";
 				yield break;
@@ -335,15 +348,15 @@ public class simonStumblesScript : MonoBehaviour {
 		yield return null;
 		for (int i = 0; i < parameters.Count(); i++)
         {
-			if (parameters[i] == "STUMBLE")
+			if (parameters[i] == "STUMBLE" || parameters[i] == "S")
 				KeypadButtons[4].OnInteract();
-			else if (parameters[i] == "RED")
+			else if (parameters[i] == "RED" || parameters[i] == "R")
 				KeypadButtons[Array.IndexOf(previousColors, ColorType.Red)].OnInteract();
-			else if (parameters[i] == "YELLOW")
+			else if (parameters[i] == "YELLOW" || parameters[i] == "Y")
 				KeypadButtons[Array.IndexOf(previousColors, ColorType.Yellow)].OnInteract();
-			else if (parameters[i] == "GREEN")
+			else if (parameters[i] == "GREEN" || parameters[i] == "G")
 				KeypadButtons[Array.IndexOf(previousColors, ColorType.Green)].OnInteract();
-			else if (parameters[i] == "BLUE")
+			else if (parameters[i] == "BLUE" || parameters[i] == "B")
 				KeypadButtons[Array.IndexOf(previousColors, ColorType.Blue)].OnInteract();
 			else
 				yield return "sendtochaterror Uh oh, that's not supposed to happen.";
