@@ -178,7 +178,7 @@ public class simonStumblesScript : MonoBehaviour {
 				return;
 			}
 			DebugLog("Stage: " + stage.ToString() + " | pressProgress (0 index): " + pressProgress.ToString() +  " | Direction Pressed: " + baseDirections[index].ToString() + " | Color Pressed: " + previousColors[index].ToString() + " | Table Lookup: " + table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])].ToString() + " | Assoc. Press Class: " + ColorPresses[pressProgress] + "."); ;
-			if (previousColors == startColors)
+			if (previousColors[0] == startColors[0] && previousColors[1] == startColors[1] && previousColors[2] == startColors[2])
 			{
 				DebugLog("Currently displayed colors are what was initially shown, using the 'However' condition.");
 				unicorn = true;
