@@ -198,7 +198,7 @@ public class simonStumblesScript : MonoBehaviour {
 			else
 			{
 				if (ColorPresses[pressProgress] == ColorType.White)
-					Log("With the last press irrevelant, you needed to press " + table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])].ToString() + " according to the table, but you pressed " + baseDirections[index].ToString() + ". Strike!");
+					Log("With the last press irrelevant, you needed to press " + table[Array.IndexOf(baseColors, Flashing[pressProgress])][Array.IndexOf(previousColors, Flashing[pressProgress])].ToString() + " according to the table, but you pressed " + baseDirections[index].ToString() + ". Strike!");
 				else
 					Log("The press for this step was " + ColorPresses[pressProgress].ToString() + " due to the same color in a previous stage, but you pressed " + previousColors[index] + ". Strike!");
 				Strike();
@@ -279,6 +279,7 @@ public class simonStumblesScript : MonoBehaviour {
 				CBTexts[i].text = toSet[i].ToString();
         }
 		animating = false;
+		DebugLog("Stumbled, displaying " + previousColors[0].ToString() + ", " + previousColors[1].ToString() + ", " + previousColors[2].ToString() + ", and " + previousColors[3].ToString() + ".");
 		yield return null;
     }
 
@@ -320,6 +321,7 @@ public class simonStumblesScript : MonoBehaviour {
 			yield break;
 		if (parameters.Count() == 1 && (parameters[0] == "COLORBLIND" || parameters[0] == "C"))
         {
+			yield return null;
 			if (tpCB)
             {
 				tpCB = false;
@@ -332,6 +334,7 @@ public class simonStumblesScript : MonoBehaviour {
 				for (int i = 0; i < 4; i++)
 					CBTexts[i].text = previousColors[i].ToString();
 			}
+			yield break;
         }
 		bool[] valid = new bool[parameters.Count()];
 		for (int i = 0; i < parameters.Count(); i++)
