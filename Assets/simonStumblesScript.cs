@@ -84,6 +84,7 @@ public class simonStumblesScript : MonoBehaviour {
 		for (int i = 0; i < 4; i++)
         {
 			ButtonMats[i].GetComponent<MeshRenderer>().material.color = ColorValues[previousColors[i]];
+			ButtonLights[i].color = ColorValues[previousColors[i]];
 			startColors[i] = previousColors[i];
 			ButtonLights[i].enabled = false;
 			ButtonLights[i].range = transform.lossyScale.x;
@@ -122,7 +123,8 @@ public class simonStumblesScript : MonoBehaviour {
 	{
 		bool toStumble = false;
 		bool unicorn = false;
-		if (animating || moduleSolved)
+		int index = Array.IndexOf(KeypadButtons, Button);
+		if (animating)
 			return;
 		if (FlashWaitRoutines[0] != null)
 		{
@@ -136,18 +138,19 @@ public class simonStumblesScript : MonoBehaviour {
 			for (int i = 0; i < 4; i++)
 				ButtonLights[i].enabled = false;
 		}
-		int index = Array.IndexOf(KeypadButtons, Button);
 		if (index == 4)
 		{
+			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+			Button.AddInteractionPunch();
+			Audio.PlaySoundAtTransform(SoundEffects[4].name, transform);
+			if (moduleSolved)
+				return;
 			if (preStage)
 			{
 				Log("Stumble pressed. Let's see how this goes, shall we?");
 				StartCoroutine(Stumble(null));
 				preStage = false;
 				FlashWaitRoutines[0] = StartCoroutine(FlashColors());
-				Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-				Button.AddInteractionPunch();
-				Audio.PlaySoundAtTransform(SoundEffects[4].name, transform);
 				return;
 			}
 			else if (stumbleReqd)
@@ -162,13 +165,13 @@ public class simonStumblesScript : MonoBehaviour {
 				Strike();
 				return;
 			}
-			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-			Button.AddInteractionPunch();
-			Audio.PlaySoundAtTransform(SoundEffects[4].name, transform);
 		}
 		else
 		{
-			if (preStage)
+			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+			Button.AddInteractionPunch();
+			FlashWaitRoutines[1] = StartCoroutine(FlashButton(index));
+			if (preStage || moduleSolved)
 				return;
 			//it's a button, so we need to check the press. 
 			if (stumbleReqd)
@@ -221,9 +224,6 @@ public class simonStumblesScript : MonoBehaviour {
 				DebugLog("All colors pressed for 'However' condition, so you'll need to stumble.");
 				stumbleReqd = true;
 			}
-			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-			Button.AddInteractionPunch();
-			FlashWaitRoutines[1] = StartCoroutine(FlashButton(index));
 		}
 		if (pressProgress == stage && !stumbleReqd)
         {
@@ -246,8 +246,8 @@ public class simonStumblesScript : MonoBehaviour {
     }
 	void Strike()
     {
-		for (int i = 0; i < 4; i++)
-			ButtonLights[i].enabled = false;
+		//for (int i = 0; i < 4; i++)
+			//ButtonLights[i].enabled = false;
 		StartCoroutine(Stumble(startColors));
 		for (int i = 0; i < 5; i++)
 			ColorPresses[i] = ColorType.White;
@@ -269,7 +269,10 @@ public class simonStumblesScript : MonoBehaviour {
 		{
 			amountChanged += Time.deltaTime * 0.75f;
 			for (int i = 0; i < 4; i++)
+            {
+				ButtonLights[i].color = Color.Lerp(ColorValues[previousColors[i]], ColorValues[toSet[i]], amountChanged);
 				ButtonMats[i].GetComponent<MeshRenderer>().material.color = Color.Lerp(ColorValues[previousColors[i]], ColorValues[toSet[i]], amountChanged);
+			}
 			yield return null;
 		}
 		for (int i = 0; i < 4; i++)
@@ -292,7 +295,7 @@ public class simonStumblesScript : MonoBehaviour {
 				yield return new WaitForSeconds(0.01f);
 			for (int i = 0; i < stage; i++)
             {
-				ButtonLights[Array.IndexOf(previousColors, Flashing[i])].color = ColorValues[Flashing[i]];
+				//ButtonLights[Array.IndexOf(previousColors, Flashing[i])].color = ColorValues[Flashing[i]];
 				ButtonLights[Array.IndexOf(previousColors, Flashing[i])].enabled = true;
 				Audio.PlaySoundAtTransform(SoundEffects[Array.IndexOf(baseDirections, Sounds[i])].name, transform);
 				yield return new WaitForSeconds(1f);
@@ -377,7 +380,7 @@ public class simonStumblesScript : MonoBehaviour {
 				yield return true;
 			if (stumbleReqd || preStage)
 				KeypadButtons[4].OnInteract();
-			else if (startColors == previousColors)
+			else if (previousColors[0] == startColors[0] && previousColors[1] == startColors[1] && previousColors[2] == startColors[2])
 				KeypadButtons[Array.IndexOf(previousColors, Flashing[pressProgress])].OnInteract();
 			else if (ColorPresses[pressProgress] != ColorType.White)
 				KeypadButtons[Array.IndexOf(previousColors, ColorPresses[pressProgress])].OnInteract();
