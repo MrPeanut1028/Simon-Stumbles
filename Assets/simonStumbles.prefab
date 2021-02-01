@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33499961666913280}
   - component: {fileID: 23921206426779552}
   - component: {fileID: 114967290529339030}
+  - component: {fileID: 114318282415602244}
   m_Layer: 0
   m_Name: Right Button
   m_TagString: Untagged
@@ -300,6 +301,7 @@ GameObject:
   - component: {fileID: 33381854966982932}
   - component: {fileID: 23513535093322808}
   - component: {fileID: 114343034989937572}
+  - component: {fileID: 114857853476527278}
   m_Layer: 0
   m_Name: Down Button
   m_TagString: Untagged
@@ -430,6 +432,7 @@ GameObject:
   - component: {fileID: 33194675684357942}
   - component: {fileID: 23373652327715754}
   - component: {fileID: 114426289757882242}
+  - component: {fileID: 114191028784648864}
   m_Layer: 0
   m_Name: Center Button
   m_TagString: Untagged
@@ -464,6 +467,7 @@ GameObject:
   - component: {fileID: 33268692557121722}
   - component: {fileID: 23389205337676102}
   - component: {fileID: 114382920251834020}
+  - component: {fileID: 114289054091525740}
   m_Layer: 0
   m_Name: Left Button
   m_TagString: Untagged
@@ -499,6 +503,7 @@ GameObject:
   - component: {fileID: 33404085069773014}
   - component: {fileID: 23934864630851268}
   - component: {fileID: 114524992535087220}
+  - component: {fileID: 114638850921430874}
   m_Layer: 0
   m_Name: Up Button
   m_TagString: Untagged
@@ -1778,6 +1783,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighlightScale: {x: 1, y: 1, z: 1}
   OutlineAmount: 0
+--- !u!114 &114191028784648864
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1867689451769252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames:
+  - Standard
 --- !u!114 &114220293532582768
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1844,6 +1862,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighlightScale: {x: 1, y: 1, z: 1}
   OutlineAmount: 0
+--- !u!114 &114289054091525740
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1893326332785814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames:
+  - UI/Lit/Transparent
 --- !u!114 &114317708712475396
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1870,6 +1901,19 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &114318282415602244
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1080931823812102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames:
+  - UI/Lit/Transparent
 --- !u!114 &114343034989937572
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2030,6 +2074,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - GUI/KT 3D Text Diffuse
+--- !u!114 &114638850921430874
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1915707942516088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames:
+  - UI/Lit/Transparent
 --- !u!114 &114654918609078806
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2078,6 +2135,19 @@ MonoBehaviour:
   m_Script: {fileID: -1675560866, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114857853476527278
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1586964675355436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames:
+  - UI/Lit/Transparent
 --- !u!114 &114882229098064188
 MonoBehaviour:
   m_ObjectHideFlags: 1
