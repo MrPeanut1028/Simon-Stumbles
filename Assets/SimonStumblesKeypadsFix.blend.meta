@@ -1,30 +1,25 @@
 fileFormatVersion: 2
-guid: 6c7e1bc5d2139df4286c31d05a48911b
+guid: b0fbc84b7255fb94d86615be5ff7bf5d
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: group_0_15277357
-    100002: //RootNode
-    100004: group_0_16089887
-    100006: group_0_3888547
-    100008: group_0_40919
-    100010: group_0_4634441
+    100002: group_0_16089887
+    100004: group_0_3888547
+    100006: group_0_40919
+    100008: group_0_4634441
+    100010: //RootNode
     400000: group_0_15277357
-    400002: //RootNode
-    400004: group_0_16089887
-    400006: group_0_3888547
-    400008: group_0_40919
-    400010: group_0_4634441
-    2100000: group_0_15277357Mat
-    2100002: color_15277357
-    2100004: color_16089887
-    2100006: color_3888547
-    2100008: color_40919
-    2100010: color_4634441
-    2100012: group_0_16089887Mat
-    2100014: group_0_3888547Mat
-    2100016: group_0_40919Mat
-    2100018: group_0_4634441Mat
+    400002: group_0_16089887
+    400004: group_0_3888547
+    400006: group_0_40919
+    400008: group_0_4634441
+    400010: //RootNode
+    2100000: color_15277357
+    2100002: color_40919
+    2100004: color_3888547
+    2100006: color_4634441
+    2100008: color_16089887
     2300000: group_0_15277357
     2300002: group_0_16089887
     2300004: group_0_3888547
@@ -36,10 +31,12 @@ ModelImporter:
     3300006: group_0_40919
     3300008: group_0_4634441
     4300000: group_0_15277357
-    4300002: group_0_16089887
+    4300002: group_0_40919
     4300004: group_0_3888547
-    4300006: group_0_40919
-    4300008: group_0_4634441
+    4300006: group_0_4634441
+    4300008: group_0_16089887
+    7400000: Default Take
+    9500000: //RootNode
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -114,7 +111,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
