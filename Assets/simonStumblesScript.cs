@@ -87,8 +87,10 @@ public class simonStumblesScript : MonoBehaviour {
 			ButtonLights[i].color = ColorValues[previousColors[i]];
 			startColors[i] = previousColors[i];
 			ButtonLights[i].enabled = false;
-			ButtonLights[i].range = transform.lossyScale.x;
-			if (Blind.ColorblindModeActive || tpCB)
+			ButtonLights[i].range = transform.lossyScale.x * 0.1f;
+			ButtonLights[i].intensity = 10f;
+
+         if (Blind.ColorblindModeActive || tpCB)
 				CBTexts[i].text = previousColors[i].ToString();
 		}
 		animating = false;
