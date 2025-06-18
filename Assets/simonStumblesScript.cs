@@ -140,7 +140,8 @@ public class simonStumblesScript : MonoBehaviour {
 			for (int i = 0; i < 4; i++)
 				ButtonLights[i].enabled = false;
 		}
-        DebugLog("Stage #" + stage.ToString() + ", Flash #" + (pressProgress + 1).ToString() + " | Pressed " + EButton(index, false) + " | Expected " + cPress());
+        if (!moduleSolved)
+            DebugLog("Stage #" + stage.ToString() + ", Flash #" + (pressProgress + 1).ToString() + " | Pressed " + EButton(index, false) + " | Expected " + cPress());
 		if (index == 4)
 		{
 			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
@@ -222,19 +223,17 @@ public class simonStumblesScript : MonoBehaviour {
 					DebugLog("The flashing color is the same as the color you pressed, so you'll need to stumble.");
 				if (Array.IndexOf(baseDirections, Sounds[pressProgress]) == index)
 					DebugLog("The stated direction is the same as the direction you pressed, so you'll need to stumble.");*/
-				stumbleReqd = true;
 				ColorPresses[pressProgress] = ColorType.White;
-			}
+                stumbleReqd = true;
+            }
             else
             {
                 ColorPresses[pressProgress] = previousColors[index];
-                pressProgress++;
+                if (unicorn && (pressProgress + 1) == stage)
+                    stumbleReqd = true;
+                else
+                    pressProgress++;
             }
-			if (unicorn && pressProgress == stage)
-            {
-				//DebugLog("All colors pressed for 'However' condition, so you'll need to stumble.");
-				stumbleReqd = true;
-			}
 		}
 		if (pressProgress == stage && !stumbleReqd)
         {
